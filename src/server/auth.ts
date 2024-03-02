@@ -17,6 +17,8 @@ declare module "next-auth" {
   interface Session extends DefaultSession {
     user: {
       id: string;
+      username: string;
+      role: string;
       // ...other properties
       // role: UserRole;
     } & DefaultSession["user"];
@@ -25,9 +27,17 @@ declare module "next-auth" {
   interface User {
     id: string;
     username: string
-    password: string;
+    role: string;
      // ...other properties
      // role: UserRole;
+  }
+}
+
+declare module "next-auth/jwt" {
+  interface JWT {
+    id: string;
+    username: string;
+    role: string;
   }
 }
 
@@ -42,16 +52,19 @@ export const authOptions: NextAuthOptions = {
       if (user) {
         token.id = user.id;
         token.username = user.username;
+        token.role = user.role;
       }
       return token;
     },
-    session: ({ session, user }) => ({
-      ...session,
-      user: {
-        ...session.user,
-        id: user.id,
-      },
-    }),
+    async session({ session, token }) {
+      if (token) {
+        session.user.id = token.id;
+        session.user.username = token.username;
+        session.user.role = token.role;
+      }
+
+      return session;
+    },
   },
   providers: [
     CredentialsProvider({
@@ -66,18 +79,21 @@ export const authOptions: NextAuthOptions = {
           type: "password",
         },
       },
-      async authorize(credentials) {
-        const user = await db.user.findFirst({
+      async authorize(credentials, _req) {
+        const foundUser = await db.user.findUnique({
           where: {
             username: credentials?.username,
+            password: credentials?.password,
           },
         });
 
-        if (user && user.password === credentials?.password) {
-          return user;
-        } else {
-          return null;
-        }
+        if (!foundUser) return null;
+
+        return {
+          id: foundUser.id,
+          username: foundUser.username,
+          role: foundUser.admin ? "ADMIN" : "USER",
+        };
       },
     }),
     /**
