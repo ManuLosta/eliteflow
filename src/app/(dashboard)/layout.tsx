@@ -93,13 +93,20 @@ export default function Layout({
             )}
           </div>
           <div className="flex flex-col items-center gap-2 p-2">
-            <div className="align-center flex justify-center gap-2">
+            <div className="flex items-center justify-center gap-2">
               <CircleUser width={30} height={30} />
               {!isCollapsed &&
                 (session?.status === "loading" ? (
                   <Skeleton className="h-8 w-[100px]" />
                 ) : (
-                  <p className="font-bold">{session?.data?.user.username}</p>
+                  <div>
+                    <p className="font-bold">{session?.data?.user.username}</p>
+                    <p className="text-xs text-gray-400">
+                      {session?.data?.user.role === "ADMIN"
+                        ? "Administrador"
+                        : "Gerente"}
+                    </p>
+                  </div>
                 ))}
             </div>
             <Button

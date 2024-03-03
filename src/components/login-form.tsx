@@ -55,8 +55,6 @@ export default function LoginForm() {
       password: values.password,
       redirect: false,
     });
-    
-    console.log(res)
 
     if (res?.error) {
       console.log(res?.error);
@@ -76,7 +74,7 @@ export default function LoginForm() {
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-6 min-w-[400px]"
+            className="min-w-[400px] space-y-6"
           >
             <FormField
               control={form.control}
@@ -85,7 +83,7 @@ export default function LoginForm() {
                 <FormItem>
                   <FormLabel>Usuario</FormLabel>
                   <FormControl>
-                    <Input {...field} autoComplete="none" />
+                    <Input {...field} autoComplete="off" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -111,7 +109,7 @@ export default function LoginForm() {
                 </Button>
               ) : (
                 <Button disabled>
-                  <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Espera
                 </Button>
               )}

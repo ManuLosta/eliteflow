@@ -1,3 +1,4 @@
+import NewUserForm from "~/components/newuser-form";
 import { Button } from "~/components/ui/button";
 import {
   Table,
@@ -16,7 +17,7 @@ export default async function Users() {
     <div>
       <h1 className="text-2xl font-bold">Usuarios</h1>
       <div className="mt-10">
-        <Button className="my-3">Nuevo usuario</Button>
+        <NewUserForm />
         <Table>
           <TableHeader>
             <TableRow>
@@ -33,7 +34,7 @@ export default async function Users() {
                 <TableCell>
                   {user.admin ? "Administrador" : "Gerente"}
                 </TableCell>
-                <TableCell>{user.createdAt.getDate()}</TableCell>
+                <TableCell>{user.createdAt.toLocaleDateString()}</TableCell>
                 <TableCell className="flex gap-2">
                   <Button variant="destructive">Eliminar</Button>
                   <Button>Editar</Button>
