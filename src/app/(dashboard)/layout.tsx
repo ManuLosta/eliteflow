@@ -70,11 +70,11 @@ export default function Layout({
         <div
           className={cn(
             isCollapsed && "scale-y-[40px]",
-            "border-r flex transition-all duration-300 ease-in-out width-[250px] justify-between flex-col"
+            "width-[250px] flex flex-col justify-between border-r transition-all duration-300 ease-in-out",
           )}
         >
           <div>
-            <div className="flex justify-end m-2">
+            <div className="m-2 flex justify-end">
               <Button
                 variant="ghost"
                 onClick={() => {
@@ -92,8 +92,8 @@ export default function Layout({
               </>
             )}
           </div>
-          <div className="p-2 flex items-center gap-2 flex-col">
-            <div className="flex gap-2 align-center justify-center">
+          <div className="flex flex-col items-center gap-2 p-2">
+            <div className="align-center flex justify-center gap-2">
               <CircleUser width={30} height={30} />
               {!isCollapsed &&
                 (session?.status === "loading" ? (
