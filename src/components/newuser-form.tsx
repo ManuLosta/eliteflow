@@ -15,6 +15,16 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "./ui/input";
 import { cn } from "~/lib/utils";
+import {
+  Select,
+  SelectTrigger,
+  SelectContent,
+  SelectValue,
+  SelectItem,
+} from "./ui/select";
+import { useEffect, useState } from "react";
+import { Destination } from "@prisma/client";
+import { api } from "~/trpc/react";
 
 const formSchema = z
   .object({
@@ -25,6 +35,8 @@ const formSchema = z
       message: "La contraseña debe tener al menos 4 caracteres.",
     }),
     repeatPassword: z.string(),
+    role: z.enum(["admin", "manager"]),
+    destiny: z.string().optional(),
   })
   .refine((data) => data.password === data.repeatPassword, {
     message: "Las contraseñas no coinciden.",
@@ -32,11 +44,15 @@ const formSchema = z
   });
 
 export default function NewUserForm() {
+  const destinations = api.destination.getAll.useQuery();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       username: "",
       password: "",
+      repeatPassword: "",
+      destiny: "",
     },
   });
 
@@ -54,7 +70,7 @@ export default function NewUserForm() {
       <DialogContent>
         <DialogTitle>Crear nuevo usuario</DialogTitle>
         <Form {...form}>
-          <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
+          <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
             <FormField
               control={form.control}
               name="username"
@@ -94,7 +110,66 @@ export default function NewUserForm() {
                 </FormItem>
               )}
             />
-            <div></div>
+            <div className="flex justify-between">
+              <FormField
+                control={form.control}
+                name="role"
+                render={({ field }) => (
+                  <FormItem className="w-1/2 pr-2">
+                    <FormLabel>Rol</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Elegir rol" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="admin">Administrador</SelectItem>
+                        <SelectItem value="manager">Gerente</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="destiny"
+                render={({ field }) => (
+                  <FormItem className="w-1/2 pl-2">
+                    <FormLabel>Destino</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Elegir destino" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {destinations.data?.length !== 0 ? (
+                          destinations.data?.map((destination) => (
+                            <SelectItem
+                              key={destination.id}
+                              value={destination.id}
+                            >
+                              {destination.description}
+                            </SelectItem>
+                          ))
+                        ) : (
+                          <SelectItem value="loading">Cargando...</SelectItem>
+                        )}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
             <Button type="submit">Crear</Button>
           </form>
         </Form>
