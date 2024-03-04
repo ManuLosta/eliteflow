@@ -2,7 +2,13 @@
 
 import { useForm } from "react-hook-form";
 import { Button, buttonVariants } from "./ui/button";
-import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "./ui/dialog";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogTitle,
+  DialogTrigger,
+} from "./ui/dialog";
 import {
   Form,
   FormControl,
@@ -25,6 +31,7 @@ import {
 import { api } from "~/trpc/react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Loader2, Plus } from "lucide-react";
 
 const formSchema = z
   .object({
@@ -45,6 +52,7 @@ const formSchema = z
 
 export default function NewUserForm() {
   const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
   const destinations = api.destination.getAll.useQuery();
   const mutation = api.user.create.useMutation();
   const router = useRouter();
@@ -60,21 +68,29 @@ export default function NewUserForm() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    mutation.mutate(values);
+    setLoading(true);
+    await mutation.mutateAsync(values);
 
     if (mutation.error) {
       form.setError("username", { message: mutation.error.message });
     } else {
-      setOpen(false);
-      router.refresh();
+      handleClose();
     }
   }
+
+  const handleClose = () => {
+    form.reset();
+    router.refresh();
+    setLoading(false);
+    setOpen(false);
+  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger
         className={cn(buttonVariants({ variant: "default" }), "mb-4")}
       >
+        <Plus className="me-2" size={20} />
         Nuevo Usuario
       </DialogTrigger>
       <DialogContent>
@@ -181,7 +197,19 @@ export default function NewUserForm() {
                 )}
               />
             </div>
-            <Button type="submit">Crear</Button>
+            <div className="flex items-center justify-end gap-2">
+              <DialogClose className={buttonVariants({ variant: "secondary" })}>
+                Cancelar
+              </DialogClose>
+              {!loading ? (
+                <Button type="submit">Crear</Button>
+              ) : (
+                <Button variant="default" disabled>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Espera
+                </Button>
+              )}
+            </div>
           </form>
         </Form>
       </DialogContent>

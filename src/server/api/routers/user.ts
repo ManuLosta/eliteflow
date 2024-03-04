@@ -38,4 +38,25 @@ export const userRouter = createTRPCRouter({
 
       return user;
     }),
+  delete: adminProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(async ({ input, ctx }) => {
+      const user = await ctx.db.user.findUnique({
+        where: {
+          id: input.id,
+        },
+      });
+
+      if (!user) {
+        throw new Error("El usuario no existe");
+      }
+
+      await ctx.db.user.delete({
+        where: {
+          id: input.id,
+        },
+      });
+
+      return user;
+    }),
 });

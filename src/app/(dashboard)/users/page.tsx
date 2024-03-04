@@ -1,5 +1,5 @@
+import DeleteUser from "~/components/delete-user";
 import NewUserForm from "~/components/newuser-form";
-import { Button } from "~/components/ui/button";
 import {
   Table,
   TableHeader,
@@ -38,8 +38,7 @@ export default async function Users() {
                 <TableCell>{user.destination_id || "-"}</TableCell>
                 <TableCell>{user.createdAt.toLocaleDateString()}</TableCell>
                 <TableCell className="flex gap-2">
-                  <Button variant="destructive">Eliminar</Button>
-                  <Button>Editar</Button>
+                  <DeleteUser userId={user.id} />
                 </TableCell>
               </TableRow>
             ))}
