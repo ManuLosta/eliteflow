@@ -22,9 +22,8 @@ import {
   SelectValue,
   SelectItem,
 } from "./ui/select";
-import { useEffect, useState } from "react";
-import { Destination } from "@prisma/client";
 import { api } from "~/trpc/react";
+import { useState } from "react";
 
 const formSchema = z
   .object({
@@ -36,7 +35,7 @@ const formSchema = z
     }),
     repeatPassword: z.string(),
     role: z.enum(["admin", "manager"]),
-    destiny: z.string().optional(),
+    destination: z.string().optional(),
   })
   .refine((data) => data.password === data.repeatPassword, {
     message: "Las contraseñas no coinciden.",
@@ -44,7 +43,9 @@ const formSchema = z
   });
 
 export default function NewUserForm() {
+  const [open, setOpen] = useState(false);
   const destinations = api.destination.getAll.useQuery();
+  const mutation = api.user.create.useMutation();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -52,16 +53,21 @@ export default function NewUserForm() {
       username: "",
       password: "",
       repeatPassword: "",
-      destiny: "",
+      destination: undefined,
     },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+    try {
+      mutation.mutate(values);
+      setOpen(false);
+    } catch (error: any) {
+      console.error(error.message);
+    }
   }
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger
         className={cn(buttonVariants({ variant: "default" }), "mb-4")}
       >
@@ -137,11 +143,12 @@ export default function NewUserForm() {
               />
               <FormField
                 control={form.control}
-                name="destiny"
+                name="destination"
                 render={({ field }) => (
                   <FormItem className="w-1/2 pl-2">
                     <FormLabel>Destino</FormLabel>
                     <Select
+                      disabled={form.watch("role") === "admin"}
                       onValueChange={field.onChange}
                       defaultValue={field.value}
                     >
