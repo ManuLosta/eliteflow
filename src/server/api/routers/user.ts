@@ -24,7 +24,7 @@ export const userRouter = createTRPCRouter({
       });
 
       if (findUser) {
-        throw new Error("User already exists");
+        throw new Error("El usuario ya existe");
       }
 
       const user = await ctx.db.user.create({

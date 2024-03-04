@@ -13,8 +13,6 @@ import { api } from "~/trpc/server";
 export default async function Users() {
   const users = await api.user.getAll.query();
 
-  console.log(users);
-
   return (
     <div>
       <h1 className="text-2xl font-bold">Usuarios</h1>
@@ -37,7 +35,7 @@ export default async function Users() {
                 <TableCell>
                   {user.admin ? "Administrador" : "Gerente"}
                 </TableCell>
-                <TableCell>{user.destination_id}</TableCell>
+                <TableCell>{user.destination_id || "-"}</TableCell>
                 <TableCell>{user.createdAt.toLocaleDateString()}</TableCell>
                 <TableCell className="flex gap-2">
                   <Button variant="destructive">Eliminar</Button>

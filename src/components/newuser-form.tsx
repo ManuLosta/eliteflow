@@ -24,6 +24,7 @@ import {
 } from "./ui/select";
 import { api } from "~/trpc/react";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 const formSchema = z
   .object({
@@ -46,6 +47,7 @@ export default function NewUserForm() {
   const [open, setOpen] = useState(false);
   const destinations = api.destination.getAll.useQuery();
   const mutation = api.user.create.useMutation();
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -58,11 +60,13 @@ export default function NewUserForm() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    try {
-      mutation.mutate(values);
+    mutation.mutate(values);
+
+    if (mutation.error) {
+      form.setError("username", { message: mutation.error.message });
+    } else {
       setOpen(false);
-    } catch (error: any) {
-      console.error(error.message);
+      router.refresh();
     }
   }
 
