@@ -15,17 +15,41 @@ datasource db {
 }
 
 model User {
-    id             String       @id @default(cuid())
-    username       String       @unique
-    password       String
-    admin          Boolean      @default(false)
-    createdAt      DateTime     @default(now())
-    destination_id String?
-    destination    Destination? @relation(fields: [destination_id], references: [id])
+    id            String       @id @default(cuid())
+    username      String       @unique
+    password      String
+    admin         Boolean      @default(false)
+    createdAt     DateTime     @default(now())
+    DestinationId String?
+    Destination   Destination? @relation(fields: [DestinationId], references: [id])
 }
 
 model Destination {
-    id          String @id
-    description String
-    User        User[]
+    id            String        @id
+    description   String
+    User          User[]
+    CentroCosto   CentroCosto[]
+    RazonSocial   RazonSocial   @relation(fields: [razonSocialId], references: [id])
+    razonSocialId String
+    Account       Account[]
+}
+
+model CentroCosto {
+    id             String      @id @default(cuid())
+    name           String
+    Destination    Destination @relation(fields: [DeestinationId], references: [id])
+    DeestinationId String
+}
+
+model RazonSocial {
+    id           String        @id @default(cuid())
+    name         String
+    Destinations Destination[]
+}
+
+model Account {
+    id            String      @id @default(cuid())
+    name          String
+    CentroCosto   Destination @relation(fields: [CentroCostoId], references: [id])
+    CentroCostoId String
 }
