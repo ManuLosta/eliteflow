@@ -132,7 +132,7 @@ export default function Layout({
             </Button>
           </div>
         </div>
-        <div className="container mt-6">{children}</div>
+        <div className="w-full">{children}</div>
       </div>
     </TooltipProvider>
   );

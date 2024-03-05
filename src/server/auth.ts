@@ -19,6 +19,7 @@ declare module "next-auth" {
       id: string;
       username: string;
       role: string;
+      destination: string;
       // ...other properties
       // role: UserRole;
     } & DefaultSession["user"];
@@ -26,10 +27,11 @@ declare module "next-auth" {
 
   interface User {
     id: string;
-    username: string
+    username: string;
     role: string;
-     // ...other properties
-     // role: UserRole;
+    destination: string;
+    // ...other properties
+    // role: UserRole;
   }
 }
 
@@ -38,6 +40,7 @@ declare module "next-auth/jwt" {
     id: string;
     username: string;
     role: string;
+    destination: string;
   }
 }
 
@@ -53,6 +56,7 @@ export const authOptions: NextAuthOptions = {
         token.id = user.id;
         token.username = user.username;
         token.role = user.role;
+        token.destination = user.destination;
       }
       return token;
     },
@@ -61,6 +65,7 @@ export const authOptions: NextAuthOptions = {
         session.user.id = token.id;
         session.user.username = token.username;
         session.user.role = token.role;
+        session.user.destination = token.destination;
       }
 
       return session;
@@ -85,6 +90,9 @@ export const authOptions: NextAuthOptions = {
             username: credentials?.username,
             password: credentials?.password,
           },
+          include: {
+            destination: true,
+          },
         });
 
         if (!foundUser) return null;
@@ -93,6 +101,7 @@ export const authOptions: NextAuthOptions = {
           id: foundUser.id,
           username: foundUser.username,
           role: foundUser.admin ? "ADMIN" : "USER",
+          destination: foundUser.destination?.description || "Admin",
         };
       },
     }),
