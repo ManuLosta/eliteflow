@@ -2,6 +2,16 @@ import { z } from "zod";
 import { adminProcedure, createTRPCRouter } from "../trpc";
 
 export const userRouter = createTRPCRouter({
+  get: adminProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ input, ctx }) => {
+      const user = await ctx.db.user.findUnique({
+        where: {
+          id: input.id,
+        },
+      });
+      return user;
+    }),
   getAll: adminProcedure.query(async ({ ctx }) => {
     const users = await ctx.db.user.findMany();
     return users;
@@ -37,6 +47,41 @@ export const userRouter = createTRPCRouter({
       });
 
       return user;
+    }),
+  update: adminProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        username: z.string(),
+        password: z.string(),
+        role: z.enum(["admin", "manager"]),
+        destination: z.string().optional(),
+      }),
+    )
+    .mutation(async ({ input, ctx }) => {
+      const user = await ctx.db.user.findUnique({
+        where: {
+          id: input.id,
+        },
+      });
+
+      if (!user) {
+        throw new Error("El usuario no existe");
+      }
+
+      const updatedUser = await ctx.db.user.update({
+        where: {
+          id: input.id,
+        },
+        data: {
+          username: input.username,
+          password: input.password,
+          admin: input.role === "admin",
+          destination_id: input.role === "admin" ? null : input.destination,
+        },
+      });
+
+      return updatedUser;
     }),
   delete: adminProcedure
     .input(z.object({ id: z.string() }))

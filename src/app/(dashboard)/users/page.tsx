@@ -1,4 +1,5 @@
 import DeleteUser from "~/components/delete-user";
+import EditUserForm from "~/components/edituser-form";
 import NewUserForm from "~/components/newuser-form";
 import {
   Table,
@@ -38,6 +39,7 @@ export default async function Users() {
                 <TableCell>{user.destination_id || "-"}</TableCell>
                 <TableCell>{user.createdAt.toLocaleDateString()}</TableCell>
                 <TableCell className="flex gap-2">
+                  <EditUserForm user={user} />
                   <DeleteUser userId={user.id} />
                 </TableCell>
               </TableRow>
