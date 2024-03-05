@@ -42,7 +42,7 @@ export const userRouter = createTRPCRouter({
           username: input.username,
           password: input.password,
           admin: input.role === "admin",
-          destination_id: input.role === "admin" ? null : input.destination,
+          destinationId: input.role === "admin" ? null : input.destination,
         },
       });
 
@@ -77,7 +77,7 @@ export const userRouter = createTRPCRouter({
           username: input.username,
           password: input.password,
           admin: input.role === "admin",
-          destination_id: input.role === "admin" ? null : input.destination,
+          destinationId: input.role === "admin" ? null : input.destination,
         },
       });
 

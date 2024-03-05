@@ -20,36 +20,36 @@ model User {
     password      String
     admin         Boolean      @default(false)
     createdAt     DateTime     @default(now())
-    DestinationId String?
-    Destination   Destination? @relation(fields: [DestinationId], references: [id])
+    destinationId String?
+    destination   Destination? @relation(fields: [destinationId], references: [id])
 }
 
 model Destination {
     id            String        @id
     description   String
     User          User[]
-    CentroCosto   CentroCosto[]
-    RazonSocial   RazonSocial   @relation(fields: [razonSocialId], references: [id])
+    centroCosto   CentroCosto[]
+    razonSocial   RazonSocial   @relation(fields: [razonSocialId], references: [id])
     razonSocialId String
-    Account       Account[]
+    account       Account[]
 }
 
 model CentroCosto {
-    id             String      @id @default(cuid())
-    name           String
-    Destination    Destination @relation(fields: [DeestinationId], references: [id])
-    DeestinationId String
+    id            String      @id @default(cuid())
+    name          String
+    destination   Destination @relation(fields: [destinationId], references: [id])
+    destinationId String
 }
 
 model RazonSocial {
     id           String        @id @default(cuid())
     name         String
-    Destinations Destination[]
+    destinations Destination[]
 }
 
 model Account {
     id            String      @id @default(cuid())
     name          String
-    CentroCosto   Destination @relation(fields: [CentroCostoId], references: [id])
-    CentroCostoId String
+    centroCosto   Destination @relation(fields: [centroCostoId], references: [id])
+    centroCostoId String
 }
